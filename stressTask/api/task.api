@@ -1,0 +1,93 @@
+syntax = "v1"
+
+info(
+    title: "压测相关"
+    desc: "压测相关服务"
+    author: "Hhx06"
+    email: "Hhx06@outlook.com"
+    version: "v1"
+)
+
+
+type Task {
+    Name string `json:"name"`                                    //压测任务名字
+    Desc string `json:"desc"`                                    //压测描述
+    TotalNum int64 `json:"total_num"`                            //总人数
+    Pace int64 `json:"pace"`                                     //步调
+    RunTime int64 `json:"run_time"`                              //执行时间（s）
+    MachineConfig *StressMachine `json:"MachineConfig"`          //机器设置
+    MaxRps int64 `json:"max_rps"`                                //最大rps【阈值】
+}
+
+type ExtraTask {
+    OpNickName string `json:"op_nickname"`                       //执行人
+    DeleteTime int64 `json:"delete_time"`                        //删除时间
+    IsDeleted int64 `json:"is_deleted"`                          //0不删除，1已删除
+    CreateTime int64 `json:"create_time"`                        //创建时间
+    UpdateTime int64 `json:"update_time"`                        //更新时间
+    LastDoTime int64 `json:"last_do_time"`                       //最后一次执行时间
+    TaskFlag int64 `json:"task_flag"`                            //类型1game2pressure
+}
+
+type StressMachine {
+    Type int64 `json:"type"`
+    Number int64 `json:"number"`
+    MasterMachineId int64 `json:"masterMachineId"`
+    MachineIds []int64 `json:"machineIds"`
+}
+
+type Game {
+    Url string `json:"url"`           //git对应url
+    Branch string `json:"branch"`     //git对应分支
+    EntryDir string `json:"entryDir"` //入口文件名称
+    GitFlag int64 `json:"git_flag"`   //git类型 1、gitlab 2、gitee
+}
+
+type InsertTaskGameReq {
+    Task
+    Game
+}
+
+
+type UpdateTaskGameReq {
+    Id int64 `json:"id"`
+    Task
+    Game
+}
+
+type DeleteTaskGameReq {
+    Id int64 `path:"id"`
+}
+
+type GetGameTaskIdReq {
+    Id int64 `path:"id"`
+}
+
+type GetGameTaskRsp {
+    Id int64 `json:"id"`
+    Task
+    ExtraTask
+    Game
+}
+
+type GetGameTaskListReq {
+    Name string `json:"name,optional"`
+    Page int64 `json:"page,optional"`
+    PageSize int64 `json:"pageSize,optional"`
+}
+
+type GetGameTaskListRsp {
+    Total int64 `json:"total"`
+    Page int64 `json:"page"`
+    PageSize int64 `json:"page_size"`
+    List []*GetGameTaskRsp `json:"list"`
+}
+
+type CommonRsp {
+    Code int `json:"code"`
+    Msg string `json:"msg"`
+    Data string `json:"data"`
+}
+
+
+

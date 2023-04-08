@@ -1,4 +1,4 @@
-package logic
+package game
 
 import (
 	"context"
@@ -9,22 +9,22 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type StressTaskLogic struct {
+type DeleteGameTaskLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewStressTaskLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StressTaskLogic {
-	return &StressTaskLogic{
+func NewDeleteGameTaskLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DeleteGameTaskLogic {
+	return &DeleteGameTaskLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *StressTaskLogic) StressTask(req *types.Request) (resp *types.Response, err error) {
+func (l *DeleteGameTaskLogic) DeleteGameTask(req *types.DeleteTaskGameReq) error {
 	// todo: add your logic here and delete this line
 
-	return
+	return nil
 }

@@ -1,0 +1,25 @@
+package game
+
+import (
+	"net/http"
+	"single/common/result"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
+	"single/stressTask/internal/logic/game"
+	"single/stressTask/internal/svc"
+	"single/stressTask/internal/types"
+)
+
+func GetGameTaskListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req types.GetGameTaskListReq
+		if err := httpx.Parse(r, &req); err != nil {
+			result.ParamErrorResult(r, w, err)
+			return
+		}
+
+		l := game.NewGetGameTaskListLogic(r.Context(), svcCtx)
+		resp, err := l.GetGameTaskList(&req)
+		result.HttpResult(r, w, resp, err)
+	}
+}

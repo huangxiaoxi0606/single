@@ -4,6 +4,7 @@ package handler
 import (
 	"net/http"
 
+	game "single/stressTask/internal/handler/game"
 	"single/stressTask/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -13,9 +14,29 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodPost,
+				Path:    "/api/game/add_task",
+				Handler: game.InsertGameTaskHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/game/update_task",
+				Handler: game.UpdateGameTaskHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/game/delete_task/:id",
+				Handler: game.DeleteGameTaskHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodGet,
-				Path:    "/from/:name",
-				Handler: StressTaskHandler(serverCtx),
+				Path:    "/api/game/get_task/:id",
+				Handler: game.GetGameTaskHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/game/get_task_list",
+				Handler: game.GetGameTaskListHandler(serverCtx),
 			},
 		},
 	)

@@ -1,12 +1,28 @@
-type Request {
-	Name string `path:"name,options=you|me"`
-}
+syntax = "v1"
 
-type Response {
-	Message string `json:"message"`
-}
+info(
+	title: "压测相关"
+	desc: "压测相关服务"
+	author: "Hhx06"
+	email: "Hhx06@outlook.com"
+	version: "v1"
+)
 
-service stressTask-api {
-	@handler StressTaskHandler
-	get /from/:name(Request) returns (Response)
+import (
+	"api/task.api"
+)
+@server(
+	group: game
+)
+service game-task-api {
+	@handler InsertGameTask //增加任务game
+	post /api/game/add_task (InsertTaskGameReq) returns ()
+	@handler UpdateGameTask //编辑任务game
+	post /api/game/update_task (UpdateTaskGameReq) returns ()
+	@handler DeleteGameTask //删除任务game
+	post /api/game/delete_task/:id (DeleteTaskGameReq) returns ()
+	@handler GetGameTask //获取任务game
+	get /api/game/get_task/:id (GetGameTaskIdReq) returns (GetGameTaskRsp)
+	@handler GetGameTaskList //获取任务game列表
+	post /api/game/get_task_list (GetGameTaskListReq) returns (GetGameTaskListRsp)
 }
