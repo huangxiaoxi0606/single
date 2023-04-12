@@ -1,3 +1,10 @@
 Name: game-task-api
 Host: 0.0.0.0
 Port: 8888
+
+Mysql:
+  DataSource: root:root000@tcp(10.18.40.214:3306)/hhx?parseTime=true
+
+CacheRedis:
+  - Host: 10.18.40.214:6379
+    Pass: root000

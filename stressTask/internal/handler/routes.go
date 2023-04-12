@@ -24,7 +24,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: game.UpdateGameTaskHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodPost,
+				Method:  http.MethodDelete,
 				Path:    "/api/game/delete_task/:id",
 				Handler: game.DeleteGameTaskHandler(serverCtx),
 			},
@@ -34,7 +34,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: game.GetGameTaskHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodPost,
+				Method:  http.MethodGet,
 				Path:    "/api/game/get_task_list",
 				Handler: game.GetGameTaskListHandler(serverCtx),
 			},

@@ -30,6 +30,8 @@ type (
 		FindOne(ctx context.Context, id int64) (*Game, error)
 		Update(ctx context.Context, data *Game) error
 		Delete(ctx context.Context, id int64) error
+		FindOneByTaskId(ctx context.Context, taskId int64) (*Game, error)
+		UpdateByTaskId(ctx context.Context, data *Game) error
 	}
 
 	defaultGameModel struct {
@@ -63,6 +65,23 @@ func (m *defaultGameModel) Delete(ctx context.Context, id int64) error {
 	return err
 }
 
+func (m *defaultGameModel) FindOneByTaskId(ctx context.Context, taskId int64) (*Game, error) {
+	hhxGameIdKey := fmt.Sprintf("%s%v", cacheHhxGameIdPrefix, taskId)
+	var resp Game
+	err := m.QueryRowCtx(ctx, &resp, hhxGameIdKey, func(ctx context.Context, conn sqlx.SqlConn, v interface{}) error {
+		query := fmt.Sprintf("select %s from %s where `task_id` = ? limit 1", gameRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, taskId)
+	})
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultGameModel) FindOne(ctx context.Context, id int64) (*Game, error) {
 	hhxGameIdKey := fmt.Sprintf("%s%v", cacheHhxGameIdPrefix, id)
 	var resp Game
@@ -94,6 +113,15 @@ func (m *defaultGameModel) Update(ctx context.Context, data *Game) error {
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, gameRowsWithPlaceHolder)
 		return conn.ExecCtx(ctx, query, data.TaskId, data.Url, data.Branch, data.EntryDir, data.GitFlag, data.Id)
+	}, hhxGameIdKey)
+	return err
+}
+
+func (m *defaultGameModel) UpdateByTaskId(ctx context.Context, data *Game) error {
+	hhxGameIdKey := fmt.Sprintf("%supdateByTask%v", cacheHhxGameIdPrefix, data.TaskId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set %s where `task_id` = ?", m.table, gameRowsWithPlaceHolder)
+		return conn.ExecCtx(ctx, query, data.TaskId, data.Url, data.Branch, data.EntryDir, data.GitFlag, data.TaskId)
 	}, hhxGameIdKey)
 	return err
 }

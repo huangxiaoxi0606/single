@@ -31,6 +31,8 @@ type (
 		FindOne(ctx context.Context, id int64) (*Task, error)
 		Update(ctx context.Context, data *Task) error
 		Delete(ctx context.Context, id int64) error
+		FindAllNotDelete(ctx context.Context, name string, offset, limit int64) ([]*Task, error)
+		CountAllNotDelete(ctx context.Context, name string) (int64, error)
 	}
 
 	defaultTaskModel struct {
@@ -67,8 +69,8 @@ func newTaskModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultTaskModel {
 func (m *defaultTaskModel) Delete(ctx context.Context, id int64) error {
 	hhxTaskIdKey := fmt.Sprintf("%s%v", cacheHhxTaskIdPrefix, id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
+		query := fmt.Sprintf("update %s set `is_deleted` = ? ,`delete_time` =? where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, 1, time.Now(), id)
 	}, hhxTaskIdKey)
 	return err
 }
@@ -106,6 +108,40 @@ func (m *defaultTaskModel) Update(ctx context.Context, data *Task) error {
 		return conn.ExecCtx(ctx, query, data.Name, data.Desc, data.TotalNum, data.Pace, data.RunTime, data.OpNickname, data.MachineConfig, data.MaxRps, data.IsDeleted, data.DeleteTime, data.LastDoTime, data.TaskFlag, data.Id)
 	}, hhxTaskIdKey)
 	return err
+}
+
+func (m *defaultTaskModel) FindAllNotDelete(ctx context.Context, name string, offset, limit int64) ([]*Task, error) {
+	var resp []*Task
+	var err error
+	if len(name) > 0 {
+		err = m.QueryRowsNoCache(&resp, fmt.Sprintf("select %s from %s where `name` like ? and `is_deleted`= ? order by `id` desc limit ?, ?", taskRows, m.table), name, 0, offset, limit)
+	} else {
+		err = m.QueryRowsNoCache(&resp, fmt.Sprintf("select %s from %s where `is_deleted`= ? order by `id` desc limit ?, ?", taskRows, m.table), 0, offset, limit)
+	}
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultTaskModel) CountAllNotDelete(ctx context.Context, name string) (int64, error) {
+	var count int64
+	var err error
+	if len(name) > 0 {
+		err = m.QueryRowNoCache(&count, fmt.Sprintf("select count(1) from %s where `name` like ? and `is_deleted`= ?", m.table), name, 0)
+	} else {
+		err = m.QueryRowNoCache(&count, fmt.Sprintf("select count(1) from %s where `is_deleted`= ?", m.table), 0)
+	}
+	switch err {
+	case nil:
+		return count, nil
+	default:
+		return 0, err
+	}
 }
 
 func (m *defaultTaskModel) formatPrimary(primary interface{}) string {

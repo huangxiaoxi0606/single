@@ -24,6 +24,10 @@ func NewDeleteGameTaskLogic(ctx context.Context, svcCtx *svc.ServiceContext) *De
 }
 
 func (l *DeleteGameTaskLogic) DeleteGameTask(req *types.DeleteTaskGameReq) error {
+	err := l.svcCtx.TaskModel.Delete(l.ctx, req.Id)
+	if err != nil {
+		return err
+	}
 	// todo: add your logic here and delete this line
 
 	return nil

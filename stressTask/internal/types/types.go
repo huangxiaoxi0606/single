@@ -4,21 +4,21 @@ package types
 type Task struct {
 	Name          string         `json:"name"`          //压测任务名字
 	Desc          string         `json:"desc"`          //压测描述
-	TotalNum      int64          `json:"total_num"`     //总人数
+	TotalNum      int64          `json:"totalNum"`      //总人数
 	Pace          int64          `json:"pace"`          //步调
-	RunTime       int64          `json:"run_time"`      //执行时间（s）
-	MachineConfig *StressMachine `json:"MachineConfig"` //机器设置
-	MaxRps        int64          `json:"max_rps"`       //最大rps【阈值】
+	RunTime       int64          `json:"runTime"`       //执行时间（s）
+	MachineConfig *StressMachine `json:"machineConfig"` //机器设置
+	MaxRps        int64          `json:"maxRps"`        //最大rps【阈值】
 }
 
 type ExtraTask struct {
-	OpNickName string `json:"op_nickname"`  //执行人
-	DeleteTime int64  `json:"delete_time"`  //删除时间
-	IsDeleted  int64  `json:"is_deleted"`   //0不删除，1已删除
-	CreateTime int64  `json:"create_time"`  //创建时间
-	UpdateTime int64  `json:"update_time"`  //更新时间
-	LastDoTime int64  `json:"last_do_time"` //最后一次执行时间
-	TaskFlag   int64  `json:"task_flag"`    //类型1game2pressure
+	OpNickName string `json:"opNickname"` //执行人
+	DeleteTime string `json:"deleteTime"` //删除时间
+	IsDeleted  int64  `json:"isDeleted"`  //0不删除，1已删除
+	CreateTime string `json:"createTime"` //创建时间
+	UpdateTime string `json:"updateTime"` //更新时间
+	LastDoTime string `json:"lastDoTime"` //最后一次执行时间
+	TaskFlag   int64  `json:"taskFlag"`   //类型1game2pressure
 }
 
 type StressMachine struct {
@@ -28,22 +28,37 @@ type StressMachine struct {
 	MachineIds      []int64 `json:"machineIds"`
 }
 
+type TaskMonitor struct {
+	MonitorConfig []GameMonitorConfig `json:"monitorConfig"`
+}
+
+type GameMonitorConfig struct {
+	Id      int64  `json:"id"`
+	Name    string `json:"name"`
+	Url     string `json:"url"`
+	Account string `json:"account"`
+	Pwd     string `json:"pwd"`
+	Type    int64  `json:"type"`
+}
+
 type Game struct {
 	Url      string `json:"url"`      //git对应url
 	Branch   string `json:"branch"`   //git对应分支
 	EntryDir string `json:"entryDir"` //入口文件名称
-	GitFlag  int64  `json:"git_flag"` //git类型 1、gitlab 2、gitee
+	GitFlag  int64  `json:"gitFlag"`  //git类型 1、gitlab 2、gitee
 }
 
 type InsertTaskGameReq struct {
 	Task
 	Game
+	TaskMonitor
 }
 
 type UpdateTaskGameReq struct {
 	Id int64 `json:"id"`
 	Task
 	Game
+	TaskMonitor
 }
 
 type DeleteTaskGameReq struct {
@@ -59,6 +74,7 @@ type GetGameTaskRsp struct {
 	Task
 	ExtraTask
 	Game
+	TaskMonitor
 }
 
 type GetGameTaskListReq struct {
@@ -70,7 +86,7 @@ type GetGameTaskListReq struct {
 type GetGameTaskListRsp struct {
 	Total    int64             `json:"total"`
 	Page     int64             `json:"page"`
-	PageSize int64             `json:"page_size"`
+	PageSize int64             `json:"pageSize"`
 	List     []*GetGameTaskRsp `json:"list"`
 }
 

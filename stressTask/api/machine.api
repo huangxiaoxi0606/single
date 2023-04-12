@@ -1,0 +1,21 @@
+syntax = "v1"
+
+info(
+    title: "机器相关"
+    desc: "机器相关"
+    author: "Hhx06"
+    email: "Hhx06@outlook.com"
+    version: "v1"
+)
+
+
+
+
+@server(
+    jwt: Auth
+    group: template
+)
+service template {
+    @handler handlerName // TODO: replace handler name and delete this comment
+    get /users/id/:userId (request) returns (response)
+}
