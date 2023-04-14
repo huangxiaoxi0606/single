@@ -11,6 +11,7 @@ type ServiceContext struct {
 	GameModel        model.GameModel
 	TaskModel        model.TaskModel
 	TaskMonitorModel model.TaskMonitorModel
+	MachineModel     model.MachineModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -20,5 +21,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		GameModel:        model.NewGameModel(sqlConn, c.CacheRedis),
 		TaskModel:        model.NewTaskModel(sqlConn, c.CacheRedis),
 		TaskMonitorModel: model.NewTaskMonitorModel(sqlConn, c.CacheRedis),
+		MachineModel:     model.NewMachineModel(sqlConn, c.CacheRedis),
 	}
 }

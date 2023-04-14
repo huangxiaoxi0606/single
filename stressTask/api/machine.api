@@ -10,12 +10,71 @@ info(
 
 
 
+type Machine {
+    Name string `json:"name"`
+    OuternetIp string `json:"outernetIp"`
+    InnernetIp string `json:"innernetIp"`
+    CpuCores int64 `json:"cpuCores"`
+    Port int64 `json:"port"`
+    RamSize int64 `json:"ramSize"`
+    RootAccount string `json:"rootAccount"`
+    RootPassword string `json:"rootPassword"`
+    NickName string `json:"nickName"`
+}
+type InsertMachineReq {
+    Machine
+}
+
+type UpdateMachineReq {
+    Machine
+    UserFlag int64 `json:"userFlag"`
+//    WorkingFlag int64 `json:"workingFlag"`
+//    IsDelete int64 `json:"isDelete"`
+}
+
+type GetMachineIdReq {
+    Id int64 `path:"id"`
+}
+
+type DeleteMachineReq {
+    Id int64 `path:"id"`
+}
+
+type GetMachineRsp {
+    Id int64 `json:"id"`
+    Machine
+    UserFlag int64 `json:"userFlag"`
+    WorkingFlag int64 `json:"workingFlag"`
+    CreateTime string `json:"createTime"`
+    UpdateTime string `json:"updateTime"`
+    IsDelete int64 `json:"isDelete"`
+}
+
+type GetMachineListReq {
+    Name string `json:"name,optional"`
+    Page int64 `json:"page,optional"`
+    PageSize int64 `json:"pageSize,optional"`
+}
+
+type GetMachineListRsp {
+    Total int64 `json:"total"`
+    Page int64 `json:"page"`
+    PageSize int64 `json:"pageSize"`
+    List []*GetMachineRsp `json:"list"`
+}
 
 @server(
-    jwt: Auth
-    group: template
+    group: machine
 )
-service template {
-    @handler handlerName // TODO: replace handler name and delete this comment
-    get /users/id/:userId (request) returns (response)
+service single-api {
+    @handler InsertMachine //增加机器
+    post /api/machine/add_machine (InsertMachineReq) returns ()
+    @handler UpdateMachine //编辑机器
+    post /api/machine/update_machine (UpdateMachineReq) returns ()
+    @handler DeleteMachine //删除机器
+    delete /api/machine/delete_machine/:id (DeleteMachineReq) returns ()
+    @handler GetMachine //获取机器
+    get /api/machine/get_machine/:id (GetMachineIdReq) returns (GetMachineRsp)
+    @handler GetMachineList //获取机器列表
+    get /api/machine/get_machine_list (GetMachineListReq) returns (GetMachineListRsp)
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	game "single/stressTask/internal/handler/game"
+	machine "single/stressTask/internal/handler/machine"
 	"single/stressTask/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -37,6 +38,36 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/api/game/get_task_list",
 				Handler: game.GetGameTaskListHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/machine/add_machine",
+				Handler: machine.InsertMachineHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/machine/update_machine",
+				Handler: machine.UpdateMachineHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/api/machine/delete_machine/:id",
+				Handler: machine.DeleteMachineHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/machine/get_machine/:id",
+				Handler: machine.GetMachineHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/machine/get_machine_list",
+				Handler: machine.GetMachineListHandler(serverCtx),
 			},
 		},
 	)

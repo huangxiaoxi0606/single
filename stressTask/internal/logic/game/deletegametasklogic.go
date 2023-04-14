@@ -2,6 +2,8 @@ package game
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	"single/common/xerr"
 
 	"single/stressTask/internal/svc"
 	"single/stressTask/internal/types"
@@ -26,9 +28,7 @@ func NewDeleteGameTaskLogic(ctx context.Context, svcCtx *svc.ServiceContext) *De
 func (l *DeleteGameTaskLogic) DeleteGameTask(req *types.DeleteTaskGameReq) error {
 	err := l.svcCtx.TaskModel.Delete(l.ctx, req.Id)
 	if err != nil {
-		return err
+		return errors.Wrapf(xerr.NewErrMsg("l.svcCtx.TaskModel.Delete is fail"), "l.svcCtx.TaskModel.Delete is fail err is : %+v", err)
 	}
-	// todo: add your logic here and delete this line
-
 	return nil
 }

@@ -107,3 +107,18 @@ type CommonRsp {
 
 
 
+@server(
+    group: game
+)
+service single-api {
+    @handler InsertGameTask //增加任务game
+    post /api/game/add_task (InsertTaskGameReq) returns ()
+    @handler UpdateGameTask //编辑任务game
+    post /api/game/update_task (UpdateTaskGameReq) returns ()
+    @handler DeleteGameTask //删除任务game
+    delete /api/game/delete_task/:id (DeleteTaskGameReq) returns ()
+    @handler GetGameTask //获取任务game
+    get /api/game/get_task/:id (GetGameTaskIdReq) returns (GetGameTaskRsp)
+    @handler GetGameTaskList //获取任务game列表
+    get /api/game/get_task_list (GetGameTaskListReq) returns (GetGameTaskListRsp)
+}

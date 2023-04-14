@@ -95,3 +95,55 @@ type CommonRsp struct {
 	Msg  string `json:"msg"`
 	Data string `json:"data"`
 }
+
+type Machine struct {
+	Name         string `json:"name"`
+	OuternetIp   string `json:"outernetIp"`
+	InnernetIp   string `json:"innernetIp"`
+	CpuCores     int64  `json:"cpuCores"`
+	Port         int64  `json:"port"`
+	RamSize      int64  `json:"ramSize"`
+	RootAccount  string `json:"rootAccount"`
+	RootPassword string `json:"rootPassword"`
+	NickName     string `json:"nickName"`
+}
+
+type InsertMachineReq struct {
+	Machine
+}
+
+type UpdateMachineReq struct {
+	Machine
+	UserFlag int64 `json:"userFlag"`
+}
+
+type GetMachineIdReq struct {
+	Id int64 `path:"id"`
+}
+
+type DeleteMachineReq struct {
+	Id int64 `path:"id"`
+}
+
+type GetMachineRsp struct {
+	Id int64 `json:"id"`
+	Machine
+	UserFlag    int64  `json:"userFlag"`
+	WorkingFlag int64  `json:"workingFlag"`
+	CreateTime  string `json:"createTime"`
+	UpdateTime  string `json:"updateTime"`
+	IsDelete    int64  `json:"isDelete"`
+}
+
+type GetMachineListReq struct {
+	Name     string `json:"name,optional"`
+	Page     int64  `json:"page,optional"`
+	PageSize int64  `json:"pageSize,optional"`
+}
+
+type GetMachineListRsp struct {
+	Total    int64            `json:"total"`
+	Page     int64            `json:"page"`
+	PageSize int64            `json:"pageSize"`
+	List     []*GetMachineRsp `json:"list"`
+}
