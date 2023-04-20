@@ -6,6 +6,7 @@ import (
 
 	game "single/stressTask/internal/handler/game"
 	machine "single/stressTask/internal/handler/machine"
+	report "single/stressTask/internal/handler/report"
 	"single/stressTask/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -68,6 +69,26 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/api/machine/get_machine_list",
 				Handler: machine.GetMachineListHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/report/run_task",
+				Handler: report.RunTaskHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/report/get_report_list",
+				Handler: report.GetReportListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/report/get_report/:id",
+				Handler: report.GetReportHandler(serverCtx),
 			},
 		},
 	)

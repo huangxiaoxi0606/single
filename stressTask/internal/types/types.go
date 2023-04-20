@@ -113,6 +113,7 @@ type InsertMachineReq struct {
 }
 
 type UpdateMachineReq struct {
+	Id int64 `json:"id"`
 	Machine
 	UserFlag int64 `json:"userFlag"`
 }
@@ -146,4 +147,78 @@ type GetMachineListRsp struct {
 	Page     int64            `json:"page"`
 	PageSize int64            `json:"pageSize"`
 	List     []*GetMachineRsp `json:"list"`
+}
+
+type Report struct {
+	Name          string `json:"name"`
+	TaskId        int64  `json:"TaskId"`
+	Result        int64  `json:"Result"`
+	Executor      string `json:"Executor"`
+	TotalNum      int64  `json:"TotalNum"`
+	Pace          int64  `json:"Pace"`
+	ReportDesc    string `json:"ReportDesc"`
+	MachineConfig string `json:"MachineConfig"`
+	RunTime       int64  `json:"RunTime"`
+	MaxTps        int64  `json:"MaxTps"`
+}
+
+type InsertReportReq struct {
+	TaskId     int64  `json:"taskId"`
+	TotalNum   int64  `json:"TotalNum"`
+	Pace       int64  `json:"Pace"`
+	MaxTps     int64  `json:"MaxTps"`
+	RunTime    int64  `json:"RunTime"`
+	ReportDesc string `json:"ReportDesc"`
+}
+
+type ReportExtra struct {
+	DistData           string `json:"DistData"`
+	ReqData            string `json:"ReqData"`
+	ErrData            string `json:"ErrData"`
+	StartTime          string `json:"StartTime"`
+	EndTime            string `json:"EndTime"`
+	IsDelete           int64  `json:"IsDelete"`
+	UpdateTime         string `json:"UpdateTime"`
+	ReceiveFlow        string `json:"ReceiveFlow"`
+	TransmitFlow       string `json:"TransmitFlow"`
+	ExcutorType        int64  `json:"ExcutorType"`
+	Report_monitor_png string `json:"ReportMonitorPng"`
+	TaskType           int64  `json:"TaskType"`
+}
+
+type ReportListExtra struct {
+	UpdateTime   string `json:"UpdateTime"`
+	ReceiveFlow  string `json:"ReceiveFlow"`
+	TransmitFlow string `json:"TransmitFlow"`
+	ExcutorType  int64  `json:"ExcutorType"`
+	TaskType     int64  `json:"TaskType"`
+}
+
+type GetReportRsp struct {
+	TaskId int64 `json:"taskId"`
+	Report
+	ReportExtra
+}
+
+type GetReportSingleRsp struct {
+	TaskId int64 `json:"taskId"`
+	Report
+	ReportListExtra
+}
+
+type GetReportListReq struct {
+	TaskId   int64 `json:"taskId"`
+	Page     int64 `json:"page,optional"`
+	PageSize int64 `json:"pageSize,optional"`
+}
+
+type GetReportListRsp struct {
+	Total    int64                 `json:"total"`
+	Page     int64                 `json:"page"`
+	PageSize int64                 `json:"pageSize"`
+	List     []*GetReportSingleRsp `json:"list"`
+}
+
+type GetReportIdReq struct {
+	Id int64 `path:"id"`
 }

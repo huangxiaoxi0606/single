@@ -12,6 +12,7 @@ type ServiceContext struct {
 	TaskModel        model.TaskModel
 	TaskMonitorModel model.TaskMonitorModel
 	MachineModel     model.MachineModel
+	ReportModel      model.ReportModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -22,5 +23,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		TaskModel:        model.NewTaskModel(sqlConn, c.CacheRedis),
 		TaskMonitorModel: model.NewTaskMonitorModel(sqlConn, c.CacheRedis),
 		MachineModel:     model.NewMachineModel(sqlConn, c.CacheRedis),
+		ReportModel:      model.NewReportModel(sqlConn, c.CacheRedis),
 	}
 }

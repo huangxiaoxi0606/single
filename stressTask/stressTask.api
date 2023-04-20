@@ -11,4 +11,5 @@ info(
 import (
 	"api/task.api"
 	"api/machine.api"
+	"api/report.api"
 )

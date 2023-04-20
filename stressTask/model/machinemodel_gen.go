@@ -33,6 +33,8 @@ type (
 		Delete(ctx context.Context, id int64) error
 		FindAllNotDelete(ctx context.Context, name string, offset, limit int64) ([]*Machine, error)
 		CountAllNotDelete(ctx context.Context, name string) (int64, error)
+		FindExistByIP(ctx context.Context, outerNetIp, innerNetIp string) (bool, error)
+		FindIdByIP(ctx context.Context, outerNetIp, innerNetIp string) (int64, error)
 	}
 
 	defaultMachineModel struct {
@@ -70,7 +72,7 @@ func (m *defaultMachineModel) Delete(ctx context.Context, id int64) error {
 	hhxMachineIdKey := fmt.Sprintf("%s%v", cacheHhxMachineIdPrefix, id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set `is_delete`= ?  where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id, 1)
+		return conn.ExecCtx(ctx, query, 1, id)
 	}, hhxMachineIdKey)
 	return err
 }
@@ -114,9 +116,9 @@ func (m *defaultMachineModel) FindAllNotDelete(ctx context.Context, name string,
 	var resp []*Machine
 	var err error
 	if len(name) > 0 {
-		err = m.QueryRowsNoCache(&resp, fmt.Sprintf("select %s from %s where `name` like ? and `is_deleted`= ? order by `id` desc limit ?, ?", taskRows, m.table), name, 0, offset, limit)
+		err = m.QueryRowsNoCache(&resp, fmt.Sprintf("select %s from %s where `name` like ? and `is_delete`= ? order by `id` desc limit ?, ?", machineRows, m.table), name, 0, offset, limit)
 	} else {
-		err = m.QueryRowsNoCache(&resp, fmt.Sprintf("select %s from %s where `is_deleted`= ? order by `id` desc limit ?, ?", taskRows, m.table), 0, offset, limit)
+		err = m.QueryRowsNoCache(&resp, fmt.Sprintf("select %s from %s where `is_delete`= ? order by `id` desc limit ?, ?", machineRows, m.table), 0, offset, limit)
 	}
 	switch err {
 	case nil:
@@ -139,6 +141,37 @@ func (m *defaultMachineModel) CountAllNotDelete(ctx context.Context, name string
 	switch err {
 	case nil:
 		return count, nil
+	default:
+		return 0, err
+	}
+}
+
+func (m *defaultMachineModel) FindExistByIP(ctx context.Context, outerNetIp, innerNetIp string) (bool, error) {
+	var count int64
+	var err error
+	err = m.QueryRowNoCache(&count, fmt.Sprintf("select count(1) from %s where `outernet_ip` = ? and `innernet_ip`= ? and `is_delete` = ?", m.table), outerNetIp, innerNetIp, 0)
+
+	switch err {
+	case nil:
+		if count > 0 {
+			return true, nil
+		}
+		return false, nil
+	default:
+		return false, err
+	}
+}
+
+func (m *defaultMachineModel) FindIdByIP(ctx context.Context, outerNetIp, innerNetIp string) (int64, error) {
+	var resp Machine
+	var err error
+	err = m.QueryRowNoCache(&resp, fmt.Sprintf("select %s from %s where `outernet_ip` = ? and `innernet_ip`= ? and `is_delete` = ? limit 1", machineRows, m.table), outerNetIp, innerNetIp, 0)
+
+	switch err {
+	case nil:
+		return resp.Id, nil
+	case sqlc.ErrNotFound:
+		return 0, nil
 	default:
 		return 0, err
 	}

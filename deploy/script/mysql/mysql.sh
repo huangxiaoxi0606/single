@@ -1,0 +1,1 @@
+goctl model mysql datasource -url="root:root000@tcp(10.18.40.214:3306)/hhx" -table="report" -c -dir .

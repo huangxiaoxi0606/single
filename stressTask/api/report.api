@@ -1,0 +1,98 @@
+syntax = "v1"
+
+info(
+    title: "报告相关"
+    desc: "报告相关"
+    author: "Hhx06"
+    email: "Hhx06@outlook.com"
+    version: "v1"
+)
+
+
+type Report {
+    Name string `json:"name"`
+    TaskId int64 `json:"TaskId"`
+    Result int64 `json:"Result"`
+    Executor string `json:"Executor"`
+    TotalNum int64 `json:"TotalNum"`
+    Pace int64 `json:"Pace"`
+    ReportDesc string `json:"ReportDesc"`
+    MachineConfig string `json:"MachineConfig"`
+    RunTime int64 `json:"RunTime"`
+    MaxTps int64 `json:"MaxTps"`
+}
+
+type InsertReportReq {
+    taskId int64 `json:"taskId"`
+    TotalNum int64 `json:"TotalNum"`
+    Pace int64 `json:"Pace"`
+    MaxTps int64 `json:"MaxTps"`
+    RunTime int64 `json:"RunTime"`
+    ReportDesc string `json:"ReportDesc"`
+}
+
+type ReportExtra {
+    DistData string `json:"DistData"`
+    ReqData string `json:"ReqData"`
+    ErrData string `json:"ErrData"`
+    StartTime string `json:"StartTime"`
+    EndTime string `json:"EndTime"`
+    IsDelete int64 `json:"IsDelete"`
+    UpdateTime string `json:"UpdateTime"`
+    ReceiveFlow string `json:"ReceiveFlow"`
+    TransmitFlow string `json:"TransmitFlow"`
+    ExcutorType int64 `json:"ExcutorType"`
+    report_monitor_png string `json:"ReportMonitorPng"`
+    TaskType int64 `json:"TaskType"`
+}
+
+type ReportListExtra {
+    UpdateTime string `json:"UpdateTime"`
+    ReceiveFlow string `json:"ReceiveFlow"`
+    TransmitFlow string `json:"TransmitFlow"`
+    ExcutorType int64 `json:"ExcutorType"`
+    TaskType int64 `json:"TaskType"`
+}
+
+type GetReportRsp {
+    taskId int64 `json:"taskId"`
+    Report
+    ReportExtra
+}
+type GetReportSingleRsp {
+    taskId int64 `json:"taskId"`
+    Report
+    ReportListExtra
+}
+
+
+type GetReportListReq {
+    taskId int64 `json:"taskId"`
+    Page int64 `json:"page,optional"`
+    PageSize int64 `json:"pageSize,optional"`
+}
+
+type GetReportListRsp {
+    Total int64 `json:"total"`
+    Page int64 `json:"page"`
+    PageSize int64 `json:"pageSize"`
+    List []*GetReportSingleRsp `json:"list"`
+}
+type GetReportIdReq {
+    Id int64 `path:"id"`
+}
+
+@server(
+    group: report
+)
+service single-api {
+    @handler RunTask // 增加测试报告
+    post /api/report/run_task (InsertReportReq) returns ()
+    @handler GetReportList // 任务报告列表
+    get /api/report/get_report_list (GetReportListReq) returns ()
+    @handler GetReport //获取任务报告详情
+    get /api/report/get_report/:id (GetReportIdReq) returns (GetReportRsp)
+}
+
+
+

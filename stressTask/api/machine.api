@@ -26,6 +26,7 @@ type InsertMachineReq {
 }
 
 type UpdateMachineReq {
+    Id int64 `json:"id"`
     Machine
     UserFlag int64 `json:"userFlag"`
 //    WorkingFlag int64 `json:"workingFlag"`

@@ -67,7 +67,7 @@ func newTaskModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultTaskModel {
 }
 
 func (m *defaultTaskModel) Delete(ctx context.Context, id int64) error {
-	hhxTaskIdKey := fmt.Sprintf("%s%v", cacheHhxTaskIdPrefix, id)
+	hhxTaskIdKey := fmt.Sprintf("%sMachineDelete%v", cacheHhxTaskIdPrefix, id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set `is_deleted` = ? ,`delete_time` =? where `id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, 1, time.Now(), id)
