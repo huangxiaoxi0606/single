@@ -6,13 +6,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
-
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
+	"strings"
 )
 
 var (
@@ -30,6 +29,8 @@ type (
 		FindOne(ctx context.Context, id int64) (*Report, error)
 		Update(ctx context.Context, data *Report) error
 		Delete(ctx context.Context, id int64) error
+		UpdatePlatReportMonitorPng(ctx context.Context, id int64, ReportMonitorPng sql.NullString) error
+		UpdateReportFlow(ctx context.Context, id int64, ReceiveFlow, TransmitFlow string) error
 	}
 
 	defaultReportModel struct {
@@ -111,6 +112,24 @@ func (m *defaultReportModel) Update(ctx context.Context, data *Report) error {
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, reportRowsWithPlaceHolder)
 		return conn.ExecCtx(ctx, query, data.TaskId, data.Result, data.Executor, data.TotalNum, data.Pace, data.ReportDesc, data.MachineConfig, data.DistData, data.ReqData, data.ErrData, data.RunTime, data.StartTime, data.EndTime, data.IsDelete, data.ReceiveFlow, data.TransmitFlow, data.ExecutorType, data.MaxTps, data.ReportMonitorPng, data.TaskType, data.Name, data.Id)
+	}, hhxReportIdKey)
+	return err
+}
+
+func (m *defaultReportModel) UpdatePlatReportMonitorPng(ctx context.Context, id int64, ReportMonitorPng sql.NullString) error {
+	hhxReportIdKey := fmt.Sprintf("%sUpdatePlatReportMonitorPng%v", cacheHhxReportIdPrefix, id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set`ReportMonitorPng` = ? where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, ReportMonitorPng, id)
+	}, hhxReportIdKey)
+	return err
+}
+
+func (m *defaultReportModel) UpdateReportFlow(ctx context.Context, id int64, ReceiveFlow, TransmitFlow string) error {
+	hhxReportIdKey := fmt.Sprintf("%UpdateReportFlow%v", cacheHhxReportIdPrefix, id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set`ReceiveFlow` = ? ,`TransmitFlow` = ? where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, ReceiveFlow, TransmitFlow, id)
 	}, hhxReportIdKey)
 	return err
 }

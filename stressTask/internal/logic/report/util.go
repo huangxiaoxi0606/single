@@ -17,37 +17,46 @@ import (
 	"strconv"
 )
 
-//验证发压机是否可用
-func (l *RunTaskLogic) verifyMachine(svcCtx *svc.ServiceContext, task *model.Task) error {
-	var MachineConfig types.StressMachine
-	err := json.Unmarshal([]byte(task.MachineConfig), &MachineConfig)
+//验证发压机是否可用,并返回主控机和发压机
+func (l *RunTaskLogic) verifyMachine(svcCtx *svc.ServiceContext, task *model.Task) (master *model.Machine, slaves []*model.Machine, err error) {
+	var (
+		MachineConfig types.StressMachine
+	)
+
+	err = json.Unmarshal([]byte(task.MachineConfig), &MachineConfig)
 	if err != nil {
-		return errors.New("json.Unmarshal failed")
+		return
 	}
 	if MachineConfig.Number < 2 || len(MachineConfig.MachineIds) < 1 {
-		return errors.New("Machine count is < 2")
+		err = errors.New("Machine count is < 2")
+		return
 	}
 	if MachineConfig.MasterMachineId == 0 {
-		return errors.New("MachineConfig.MasterMachineId is empty")
+		err = errors.New("MachineConfig.MasterMachineId is empty")
+		return
 	}
 	//判断主控机是否被占用
-	master, err := svcCtx.MachineModel.FindOne(l.ctx, MachineConfig.MasterMachineId)
+	master, err = svcCtx.MachineModel.FindOne(l.ctx, MachineConfig.MasterMachineId)
 	if err != nil {
-		return err
+		return
 	}
 	if master.IsDelete == 1 || master.UseFlag == 1 || master.WorkingFlag == 1 {
-		return errors.New("MachineConfig.MasterMachineId is  unavailable,MachineConfig.MasterMachineId:" + strconv.FormatInt(MachineConfig.MasterMachineId, 10))
+		err = errors.New("MachineConfig.MasterMachineId is  unavailable,MachineConfig.MasterMachineId:" + strconv.FormatInt(MachineConfig.MasterMachineId, 10))
+		return
 	}
 	//判断发压机是否被占用
 	for _, v := range MachineConfig.MachineIds {
-		slave, err := svcCtx.MachineModel.FindOne(l.ctx, v)
+		var slave *model.Machine
+		slave, err = svcCtx.MachineModel.FindOne(l.ctx, v)
 		if err != nil {
-			return err
+			return
 		}
 		if slave.IsDelete == 1 || slave.UseFlag == 1 || slave.WorkingFlag == 1 {
-			return errors.New("MachineConfig.MasterMachineIds is  unavailable,MachineConfig.slave:" + strconv.FormatInt(v, 10))
+			err = errors.New("MachineConfig.MasterMachineIds is  unavailable,MachineConfig.slave:" + strconv.FormatInt(v, 10))
+			return
 		}
+		slaves = append(slaves, slave)
 	}
-	return nil
+	return
 
 }

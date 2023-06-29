@@ -13,6 +13,7 @@ type ServiceContext struct {
 	TaskMonitorModel model.TaskMonitorModel
 	MachineModel     model.MachineModel
 	ReportModel      model.ReportModel
+	GameStatusCh     chan *GameStatusParam
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -25,4 +26,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		MachineModel:     model.NewMachineModel(sqlConn, c.CacheRedis),
 		ReportModel:      model.NewReportModel(sqlConn, c.CacheRedis),
 	}
+}
+
+type GameStatusParam struct {
+	MachineConfig string
+	ReportId      int64
+	Status        int64
 }

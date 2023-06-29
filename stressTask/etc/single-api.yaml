@@ -11,3 +11,24 @@ CacheRedis:
     Pass: root000
 
 
+Git:
+  GitCloneUrlHead: `https://PRIVATE-TOKE:`
+  GitProjectPath: /data/app/single/gitProject/
+  GitlabToken: i1ZafQYSCucMD3PeGgoy
+
+Ssh:
+  User: root
+  MasterRemotely: /data/load/master
+  SlaveRemotely: /data/load/slave
+
+PushGateway:
+  UrlPre: http://10.18.97.253:9091/metrics/job/oldlocusttest
+  MonitorUrl: http://10.18.97.253:3000/api/datasources/proxy/3/api/v1/query_range?query=locust_current_rps{push_reportid=\"%d\"}&start=%d&end=%d&step=1
+
+ReportToPdfPath :
+  Path: /data/app/stress_task_api/pyfile/
+  UrlPre: http://127.0.0.1:9103/api/gameReport/reportCharts/
+
+
+Flow :
+  Url: http://10.18.97.253:3000/api/datasources/proxy/3/api/v1/query_range?query=
